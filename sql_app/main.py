@@ -11,7 +11,7 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="sql_app/templates")
 
 def get_db():
     db = SessionLocal()
