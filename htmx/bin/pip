@@ -1,4 +1,4 @@
-#!/home/pawel/studia/htmxPython/htmx/bin/python3.10
+#!/home/pawel/studia/htmxPython/htmx/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
