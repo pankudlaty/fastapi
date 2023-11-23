@@ -1,10 +1,10 @@
 from typing import Optional
-from fastapi import FastAPI, Request, Header, Depends
+from fastapi import FastAPI, Request, Header, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from .database import SessionLocal, engine
-from . import models
+from . import models, schemas, crud 
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -21,37 +21,15 @@ def get_db():
         db.close()
 
 
-@app.on_event("startup")
-def startup_populate_db():
-    db = SessionLocal()
-    num_films = db.query(models.Film).count()
-    if num_films == 0:
-        films = [
-            {'name': 'Blade Runner', 'director': 'Ridley Scott'},
-            {'name': 'Pulp Fiction', 'director': 'Quentin Tarantino'},
-            {'name': 'Mulholland Drive', 'director': 'David Lynch'},
-            {'name': 'Jurassic Park', 'director': 'Steven Spielberg'},
-        ]
-        for film in films:
-            db.add(models.Film(**film))
-        db.commit()
-    else:
-        print(f"{num_films} films already in DB")
-    db.close()
+@app.post("/mechanics/", response_model=schemas.Mechanic)
+def create_mechanic(mechanic: schemas.MechanicCreate, db: Session = Depends(get_db)):
+    db_mechanic = crud.get_mechanic_by_login(db, login=mechanic.login) 
+    if db_mechanic:
+        raise HTTPException(status_code=400, detail="Login już istnieje")
+    return crud.create_mechanic(db=db, mechanic=mechanic)
 
 
-@app.get('/index/', response_class=HTMLResponse)
-def movielist(
-    request: Request,
-    hx_request: Optional[str] = Header(None),
-    db: Session = Depends(get_db),
-    page: int = 1
-):
-    N = 2
-    OFFSET = (page - 1) * N
-    films = db.query(models.Film).offset(OFFSET).limit(N)
-    context = {'request': request, 'films': films,'page': page}
-    if hx_request:
-       return templates.TemplateResponse("table.html", context)
-    return templates.TemplateResponse("index.html", context)
-
+@app.get("/mechanics/", response_model=list[schemas.Mechanic])
+def read_mechanics(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    mechanics = crud.get_mechanics(db, skip=skip, limit=limit)
+    return mechanics
