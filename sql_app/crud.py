@@ -15,7 +15,7 @@ def get_mechanics(db: Session, skip: int = 0, limit: int = 100):
 
 def create_mechanic(db: Session, mechanic:schemas.MechanicCreate):
     fake_hashed_password = mechanic.password + "notreallyhashed"
-    db_mechanic = models.Mechanic(login=mechanic.login, hashed_password=fake_hashed_password, is_admin=mechanic.is_admin)
+    db_mechanic = models.Mechanic(login=mechanic.login,first_name=mechanic.first_name,last_name=mechanic.last_name, hashed_password=fake_hashed_password, is_admin=mechanic.is_admin)
     db.add(db_mechanic)
     db.commit()
     db.refresh(db_mechanic)

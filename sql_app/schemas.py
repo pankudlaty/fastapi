@@ -23,6 +23,8 @@ class Repair(RepairBase):
 
 class MechanicBase(BaseModel):
     login: str
+    first_name: str
+    last_name: str
     
 
 class MechanicCreate(MechanicBase):

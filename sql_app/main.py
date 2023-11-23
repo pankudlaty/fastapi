@@ -30,6 +30,13 @@ def create_mechanic(mechanic: schemas.MechanicCreate, db: Session = Depends(get_
 
 
 @app.get("/mechanics/", response_model=list[schemas.Mechanic])
-def read_mechanics(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_mechanics(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     mechanics = crud.get_mechanics(db, skip=skip, limit=limit)
-    return mechanics
+    context = {"request": request, "mechanics": mechanics}
+    return templates.TemplateResponse("mechanics.html", context)
+
+
+@app.get("/create_mechanic/")
+def create_mechanic_form(request: Request, db: Session = Depends(get_db)):
+    context = {"request": request}
+    return templates.TemplateResponse("create_mechanic.html", context)
