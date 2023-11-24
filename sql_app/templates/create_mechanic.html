@@ -5,7 +5,27 @@
 {% endblock %}
 
 {% block content %}
-	<div class="container">
+	<div class="mx-4">
+   <form method="POST">
+    <div class="border">
+       <label for="login">Login</label>
+       <input name="login" placeholder="Enter Login">
+    </div>
+    <div class="border">
+       <label for="password">Password</label>
+       <input name="password" placeholder="Enter Password">
+    </div>
+
+    <div>
+      <label for="first_name">First Name</label>
+      <input name="first_name" placeholder="Enter First Name">
+    </div>
+    <div>
+      <label for="last_name">Last Name</label>
+      <input name="last_name" placeholder="Enter Last Name">
+    </div>
+    <button type="submit">Add Mechanic</button>
     
+
 	<div>
 {% endblock %}

@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import FastAPI, Request, Header, Depends, HTTPException
+from fastapi import FastAPI, Request, Header, Depends, HTTPException, Form, responses, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -21,13 +21,11 @@ def get_db():
         db.close()
 
 
-@app.post("/mechanics/", response_model=schemas.Mechanic)
-def create_mechanic(mechanic: schemas.MechanicCreate, db: Session = Depends(get_db)):
-    db_mechanic = crud.get_mechanic_by_login(db, login=mechanic.login) 
-    if db_mechanic:
-        raise HTTPException(status_code=400, detail="Login już istnieje")
-    return crud.create_mechanic(db=db, mechanic=mechanic)
-
+@app.post("/create_mechanic/")
+async def create_mechanic(request: Request, login: str = Form(...),first_name: str = Form(...), last_name: str = Form(...),password: str = Form(...),  db: Session = Depends(get_db)):
+    mechanic = schemas.MechanicCreate(login=login,password=password,first_name=first_name, last_name=last_name, is_admin=False)
+    crud.create_mechanic(db=db,mechanic=mechanic)
+    return responses.RedirectResponse("/create_mechanic", status_code=status.HTTP_302_FOUND)
 
 @app.get("/mechanics/", response_model=list[schemas.Mechanic])
 def read_mechanics(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
