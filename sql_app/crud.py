@@ -10,8 +10,8 @@ def get_mechanic(db: Session, mechanic_id: int):
 def get_mechanic_by_login(db: Session, login: str):
     return db.query(models.Mechanic).filter(models.Mechanic.login == login).first()
 
-def get_mechanics(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Mechanic).offset(skip).limit(limit).all()
+def get_mechanics(db: Session):
+    return db.query(models.Mechanic).all()
 
 
 def create_mechanic(db: Session, mechanic:schemas.MechanicCreate):
@@ -31,3 +31,16 @@ def delete_mechanic(db: Session, mechanic_id: int):
     return {"ok": True}
 
 
+def create_repair(db: Session, repair: schemas.RepairCreate):
+    db_repair = models.Repair(**repair.model_dump())
+    db.add(db_repair)
+    db.commit()
+    db.refresh(db_repair)
+    return db_repair
+
+def get_repairs(db: Session):
+    return db.query(models.Repair).all()
+
+
+def get_repair(db: Session, repair_id: int):
+    return db.query(models.Repair).filter(models.Repair.id == repair_id).first()

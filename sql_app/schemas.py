@@ -13,7 +13,7 @@ class RepairCreate(RepairBase):
 
 class Repair(RepairBase):
     id: int
-    mechanic_id: int
+    mechanic_id: int | None
 
     class Config:
         from_attributes = True
