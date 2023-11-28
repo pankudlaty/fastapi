@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -20,5 +21,13 @@ def create_mechanic(db: Session, mechanic:schemas.MechanicCreate):
     db.commit()
     db.refresh(db_mechanic)
     return db_mechanic
+
+def delete_mechanic(db: Session, mechanic_id: int):
+    db_mechanic = db.get(models.Mechanic, mechanic_id)
+    if not db_mechanic:
+        raise HTTPException(status_code=404, detail="Mechanic not found")
+    db.delete(db_mechanic)
+    db.commit()
+    return {"ok": True}
 
 

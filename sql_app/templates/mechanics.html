@@ -9,6 +9,7 @@
     <table class="min-w-[50%] mb-4">
       <thead class="border-b text-lg">
         <tr>
+          <th class="border">ID</th>
           <th class="border">Login</th>
           <th class="border">First Name</th>
           <th class="border">Last Name</th>
@@ -16,6 +17,7 @@
         </tr>
         {% for mechanic in mechanics %}
         <tr>
+            <td class="border">{{mechanic.id}}</td>
             <td class="border">{{mechanic.login}}</td>
             <td class="border">{{mechanic.first_name}}</td>
             <td class="border">{{mechanic.last_name}}</td>

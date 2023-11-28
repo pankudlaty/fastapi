@@ -22,7 +22,7 @@ def get_db():
 
 
 @app.post("/create_mechanic/")
-async def create_mechanic(request: Request, login: str = Form(...),first_name: str = Form(...), last_name: str = Form(...),password: str = Form(...),  db: Session = Depends(get_db)):
+def create_mechanic( login: str = Form(...),first_name: str = Form(...), last_name: str = Form(...),password: str = Form(...),  db: Session = Depends(get_db)):
     mechanic = schemas.MechanicCreate(login=login,password=password,first_name=first_name, last_name=last_name, is_admin=False)
     crud.create_mechanic(db=db,mechanic=mechanic)
     return responses.RedirectResponse("/create_mechanic", status_code=status.HTTP_302_FOUND)
@@ -35,6 +35,11 @@ def read_mechanics(request: Request, skip: int = 0, limit: int = 100, db: Sessio
 
 
 @app.get("/create_mechanic/")
-def create_mechanic_form(request: Request, db: Session = Depends(get_db)):
+def create_mechanic_form(request: Request):
     context = {"request": request}
     return templates.TemplateResponse("create_mechanic.html", context)
+
+
+@app.delete("/delete_mechanic/{mechanic_id}")
+def delete_mechanic(mechanic_id: int, db: Session = Depends(get_db)):
+    return crud.delete_mechanic(db=db,mechanic_id=mechanic_id)

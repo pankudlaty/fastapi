@@ -16,7 +16,7 @@ class Repair(RepairBase):
     mechanic_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 
@@ -36,7 +36,7 @@ class Mechanic(MechanicBase):
     repairs: list[Repair] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 
