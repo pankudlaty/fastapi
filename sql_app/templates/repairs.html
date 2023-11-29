@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}
+<title>Repairs</title>
+{% endblock %}
+{% block content %}
+<div class="mx-4">
+  <p class="text-2xl font-bold mb-4">Repairs</p>
+  <table class="min-w-[50%] mb-4">
+    <thead class="border-b text-lg">
+      <tr>
+        <th class="border">ID</th>
+        <th class="border">Manufacturer</th>
+        <th class="border">Model</th>
+        <th class="border">Type</th>
+        <th class="border">Description</th>
+      </tr>
+      {% for repair in repairs %}
+      <tr>
+        <td class="border">{{repair.id}}</td>
+        <td class="border">{{repair.manufacturer}}</td>
+        <td class="border">{{repair.model}}</td>
+        <td class="border">{{repair.kind}}</td>
+        <td class="border">{{repair.description}}</td>
+      </tr>
+      {% endfor %}
+    </thead>
+  </table>
+</div>
+{% endblock %}

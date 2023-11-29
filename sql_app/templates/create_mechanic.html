@@ -7,7 +7,7 @@
 {% block content %}
 	<div class="mx-4">
    <form method="POST">
-    <div class="border">
+    <div class="min-w-[50%] mb-4 border">
        <label for="login">Login</label>
        <input name="login" placeholder="Enter Login">
     </div>
@@ -23,6 +23,10 @@
     <div>
       <label for="last_name">Last Name</label>
       <input name="last_name" placeholder="Enter Last Name">
+    </div>
+    <div>
+      <label for="is_admin">Is Admin</label>
+      <input type="checkbox" name="is_admin" placeholder="Enter Last Name" value="True">
     </div>
     <button type="submit">Add Mechanic</button>
     

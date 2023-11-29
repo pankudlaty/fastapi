@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RepairBase(BaseModel):
@@ -14,10 +14,7 @@ class RepairCreate(RepairBase):
 class Repair(RepairBase):
     id: int
     mechanic_id: int | None
-
-    class Config:
-        from_attributes = True
-
+    model_config = ConfigDict(from_attributes=True)
 
 
 
@@ -25,7 +22,6 @@ class MechanicBase(BaseModel):
     login: str
     first_name: str
     last_name: str
-    
 
 class MechanicCreate(MechanicBase):
     password: str
@@ -34,9 +30,4 @@ class MechanicCreate(MechanicBase):
 class Mechanic(MechanicBase):
     id: int
     repairs: list[Repair] = []
-
-    class Config:
-        from_attributes = True
-
-
-
+    model_config = ConfigDict(from_attributes=True)
