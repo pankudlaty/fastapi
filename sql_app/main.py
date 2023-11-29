@@ -41,12 +41,19 @@ def create_mechanic_form(request: Request):
 
 @app.delete("/delete_mechanic/{mechanic_id}")
 def delete_mechanic(mechanic_id: int, db: Session = Depends(get_db)):
-    return crud.delete_mechanic(db=db,mechanic_id=mechanic_id)
+    crud.delete_mechanic(db=db,mechanic_id=mechanic_id)
 
+@app.get("/create_repair/")
+def create_repair_form(request: Request):
+    context = {"request": request}
+    return templates.TemplateResponse("create_repair.html", context)
 
 @app.post("/create_repair/")
-def create_repair(repair: schemas.RepairCreate, db: Session = Depends(get_db)):
-    return crud.create_repair(db=db,repair=repair)
+def create_repair(manufacturer: str = Form(...), model: str = Form(...), kind: str = Form(...), description: str = Form(...), db: Session = Depends(get_db)):
+    repair = schemas.RepairCreate(manufacturer=manufacturer, model=model, kind=kind, description=description)
+    crud.create_repair(db=db,repair=repair)
+    return responses.RedirectResponse("/create_repair", status_code=status.HTTP_302_FOUND)
+
 
 @app.get("/repairs/", response_model=list[schemas.Repair])
 def read_repairs(request: Request, db: Session = Depends(get_db)):

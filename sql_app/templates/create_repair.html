@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+	<title>Create Mechanic</title>
+{% endblock %}
+
+{% block content %}
+	<div class="mx-4">
+  <p class="text-2xl font-bold mb-4">Add Repair</p>
+   <form method="POST">
+    <div class="min-w-[50%] mb-4 border">
+       <label for="manufacturer">Manufacturer</label>
+       <input name="manufacturer" placeholder="Enter Manufacturer">
+    </div>
+    <div class="border">
+       <label for="model">Model</label>
+       <input name="model" placeholder="Enter Model">
+    </div>
+    <div>
+      <label for="kind">Type</label>
+      <input name="kind" placeholder="Enter Type">
+    </div>
+    <div>
+      <label for="description">Description</label>
+      <input name="description" placeholder="Enter Description">
+    </div>
+    <button class="border" type="submit">Add Repair</button>
+  </form>
+	<div>
+{% endblock %}

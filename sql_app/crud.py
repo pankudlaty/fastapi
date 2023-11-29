@@ -28,7 +28,6 @@ def delete_mechanic(db: Session, mechanic_id: int):
         raise HTTPException(status_code=404, detail="Mechanic not found")
     db.delete(db_mechanic)
     db.commit()
-    return {"ok": True}
 
 
 def create_repair(db: Session, repair: schemas.RepairCreate):
