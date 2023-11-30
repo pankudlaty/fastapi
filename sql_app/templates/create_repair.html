@@ -5,14 +5,15 @@
 {% endblock %}
 
 {% block content %}
-	<div class="mx-4">
-  <p class="text-2xl font-bold mb-4">Add Repair</p>
-   <form method="POST">
-    <div class="min-w-[50%] mb-4 border">
+<div class="flex items-left justify-left">
+  <div class="px-8 py-6 mt-4 text-left bg-white shadow-lg">
+    <h3 class="text-2xl font-bold text-center">Add Mechanic</h3>   
+    <form method="POST">
+    <div>
        <label for="manufacturer">Manufacturer</label>
        <input name="manufacturer" placeholder="Enter Manufacturer">
     </div>
-    <div class="border">
+    <div>
        <label for="model">Model</label>
        <input name="model" placeholder="Enter Model">
     </div>
@@ -24,7 +25,8 @@
       <label for="description">Description</label>
       <input name="description" placeholder="Enter Description">
     </div>
-    <button class="border" type="submit">Add Repair</button>
+    <button class="px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900" type="submit">Add Repair</button>
   </form>
-	<div>
+  </div>
+</div>
 {% endblock %}

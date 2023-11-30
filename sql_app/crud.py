@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from . import models, schemas
+from . import models, schemas, hasher
 
 
 def get_mechanic(db: Session, mechanic_id: int):
@@ -15,8 +15,8 @@ def get_mechanics(db: Session):
 
 
 def create_mechanic(db: Session, mechanic:schemas.MechanicCreate):
-    fake_hashed_password = mechanic.password + "notreallyhashed"
-    db_mechanic = models.Mechanic(login=mechanic.login,first_name=mechanic.first_name,last_name=mechanic.last_name, hashed_password=fake_hashed_password, is_admin=mechanic.is_admin)
+    hashed_password = hasher.Hasher.get_password_hash(mechanic.password)
+    db_mechanic = models.Mechanic(login=mechanic.login,first_name=mechanic.first_name,last_name=mechanic.last_name, hashed_password=hashed_password, is_admin=mechanic.is_admin)
     db.add(db_mechanic)
     db.commit()
     db.refresh(db_mechanic)
