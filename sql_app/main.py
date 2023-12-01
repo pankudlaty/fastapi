@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, Response, Depends,  Form, responses, status, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import True_
 from sqlalchemy.orm import Session
 from jose import jwt
 from .database import SessionLocal, engine
@@ -59,6 +60,30 @@ def login_form(request: Request):
     context = {"request": request}
     return templates.TemplateResponse("login.html", context)
 
+@app.post("/")
+def login(response: Response, request: Request, login: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+    login = login
+    password = password
+    err = []
+    context = {"request": request, "errors": err}
+    try:
+        mechanic = db.query(models.Mechanic).filter(models.Mechanic.login == login).first()
+        if mechanic is None:
+            err.append("Login does not exist")
+            return templates.TemplateResponse("login.html", context)
+        else:
+            if Hasher.verify_password(password, mechanic.hashed_password):
+                data = {"sub":login}
+                jwt_token = jwt.encode(data,SECERET_KEY,algorithm=ALGORITHM)
+                response = responses.RedirectResponse("/repairs",status_code=status.HTTP_302_FOUND)
+                response.set_cookie(key="access_token", value=f"Bearer {jwt_token}", httponly=True)
+                return response
+            else:
+                err.append("Wrong password")
+                return templates.TemplateResponse("login.html", context)
+    except:
+        err.append("Problem with auth or storing token")
+        return templates.TemplateResponse("login.html", context)
 
 @app.post("/create_mechanic/")
 def create_mechanic( login: str = Form(...),first_name: str = Form(...), last_name: str = Form(...),password: str = Form(...),is_admin: bool = Form(False),  db: Session = Depends(get_db)):
@@ -67,7 +92,10 @@ def create_mechanic( login: str = Form(...),first_name: str = Form(...), last_na
     return responses.RedirectResponse("/create_mechanic", status_code=status.HTTP_302_FOUND)
 
 @app.get("/mechanics/", response_model=list[schemas.Mechanic])
-def read_mechanics(request: Request, db: Session = Depends(get_db)):
+def read_mechanics(request: Request, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    mechanic = get_user_from_token(db, token)
+    if not mechanic.is_admin:
+        return templates.TemplateResponse("denied.html", {"request": request})
     mechanics = crud.get_mechanics(db)
     context = {"request": request, "mechanics": mechanics}
     return templates.TemplateResponse("mechanics.html", context)
@@ -75,8 +103,11 @@ def read_mechanics(request: Request, db: Session = Depends(get_db)):
 
 
 @app.get("/create_mechanic/")
-def create_mechanic_form(request: Request):
+def create_mechanic_form(request: Request,db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    mechanic = get_user_from_token(db, token)
     context = {"request": request}
+    if not mechanic.is_admin:
+        return templates.TemplateResponse("denied.html", context)
     return templates.TemplateResponse("create_mechanic.html", context)
 
 
@@ -85,8 +116,11 @@ def delete_mechanic(mechanic_id: int, db: Session = Depends(get_db)):
     crud.delete_mechanic(db=db,mechanic_id=mechanic_id)
 
 @app.get("/create_repair/")
-def create_repair_form(request: Request):
+def create_repair_form(request: Request,db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     context = {"request": request}
+    mechanic = get_user_from_token(db, token)
+    if not mechanic.is_admin:
+        return templates.TemplateResponse("denied.html", context)
     return templates.TemplateResponse("create_repair.html", context)
 
 @app.post("/create_repair/")
@@ -97,15 +131,19 @@ def create_repair(manufacturer: str = Form(...), model: str = Form(...), kind: s
 
 
 @app.get("/repairs/", response_model=list[schemas.Repair])
-def read_repairs(request: Request, db: Session = Depends(get_db)):
+def read_repairs(request: Request, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    mechanic = get_user_from_token(db, token)
+    mechanic_is_admin = bool(mechanic.is_admin)
+    mechanic_id = mechanic.id
+    if not mechanic_is_admin:
+        repairs = crud.get_repairs_for_mechanic(db=db,mechanic_id=mechanic_id)
+        context = {"request": request, "repairs": repairs}
+        return templates.TemplateResponse("repairs.html", context)
     repairs = crud.get_repairs(db)
     context = {"request": request, "repairs": repairs}
     return templates.TemplateResponse("repairs.html", context)
 
-
-@app.get("/repairs/{repair_id}", response_model=schemas.Repair)
-def read_repair(request: Request, repair_id: int, db: Session = Depends(get_db)):
-    repair = crud.get_repair(db=db, repair_id=repair_id)
-    context = {"request": request, "repair": repair}
-    return context
+@app.patch("/repair/{repair_id}/mechanic/{mechanic_id}")
+def assign_repair(repair_id: int, mechanic_id: int, db: Session = Depends(get_db)):
+    return crud.assign_repair(db=db,mechanic_id=mechanic_id,repair_id=repair_id)
 

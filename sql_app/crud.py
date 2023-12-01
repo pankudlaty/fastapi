@@ -43,3 +43,15 @@ def get_repairs(db: Session):
 
 def get_repair(db: Session, repair_id: int):
     return db.query(models.Repair).filter(models.Repair.id == repair_id).first()
+
+def get_repairs_for_mechanic(db: Session, mechanic_id: int):
+    return db.query(models.Repair).filter(models.Repair.mechanic_id == mechanic_id).all()
+
+def assign_repair(db: Session, mechanic_id: int, repair_id: int):
+    db_repair = db.get(models.Repair, repair_id)
+    db_repair.mechanic_id = mechanic_id
+    db.add(db_repair)
+    db.commit()
+    db.refresh(db_repair)
+    return {"message": "Repair assigned"}
+
